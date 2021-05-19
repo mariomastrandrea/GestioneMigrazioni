@@ -2,20 +2,21 @@ package it.polito.tdp.borders.model;
 
 public class Evento implements Comparable<Evento>
 {
-	private int t;
-	private Country country;
-	private int n;
+	private final int time;
+	private final Country country;
+	private final int num;
 	
-	public Evento(int t, Country country, int n)
+	
+	public Evento(int time, Country country, int num)
 	{
-		this.t = t;
+		this.time = time;
 		this.country = country;
-		this.n = n;
+		this.num = num;
 	}
 
-	public int getT()
+	public int getTime()
 	{
-		return this.t;
+		return this.time;
 	}
 
 	public Country getCountry()
@@ -23,15 +24,14 @@ public class Evento implements Comparable<Evento>
 		return this.country;
 	}
 
-	public int getN()
+	public int getNum()
 	{
-		return this.n;
+		return this.num;
 	}
 
 	@Override
 	public int compareTo(Evento other)
 	{
-		return Integer.compare(t, n);
+		return Integer.compare(this.time, other.time);
 	}
-	
 }

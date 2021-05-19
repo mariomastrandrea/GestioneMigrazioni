@@ -11,39 +11,48 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.borders.FXMLController">
+<BorderPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="it.polito.tdp.borders.FXMLController">
    <top>
       <Label text="Gestione Migrazioni" BorderPane.alignment="CENTER">
          <font>
-            <Font size="18.0" />
+            <Font size="25.0" />
          </font>
+         <BorderPane.margin>
+            <Insets bottom="5.0" top="20.0" />
+         </BorderPane.margin>
       </Label>
    </top>
    <center>
-      <VBox spacing="5.0" BorderPane.alignment="CENTER">
+      <VBox spacing="15.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
                <children>
-                  <Label prefWidth="60.0" text="Anno:" />
-                  <TextField fx:id="txtAnno" alignment="TOP_LEFT" prefWidth="150.0" />
-                  <Button mnemonicParsing="false" onAction="#doCalcolaConfini" text="Calcola confini" />
+                  <Label alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefWidth="50.0" text="Anno:" />
+                  <TextField fx:id="annoTextField" alignment="TOP_LEFT" onKeyTyped="#handleAnnoTyping" prefWidth="150.0" promptText="Inserisci anno..." />
+                  <Button fx:id="calcolaConfiniButton" disable="true" mnemonicParsing="false" onAction="#handleCalcolaConfini" text="Calcola confini" />
                </children>
                <VBox.margin>
-                  <Insets top="5.0" />
+                  <Insets left="5.0" />
                </VBox.margin>
             </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="5.0">
+            <HBox alignment="CENTER_LEFT" spacing="15.0">
                <children>
-                  <Label prefWidth="60.0" text="Nazione:" />
-                  <ComboBox fx:id="boxNazione" prefWidth="150.0" />
-                  <Button mnemonicParsing="false" onAction="#doSimula" text="Simula" />
+                  <Label alignment="CENTER_RIGHT" prefWidth="50.0" text="Nazione:" />
+                  <ComboBox fx:id="nazioneComboBox" disable="true" onAction="#handleNazioneSelected" prefWidth="270.0" promptText="Scegli nazione..." />
+                  <Button fx:id="avviaSimulazioneButton" disable="true" mnemonicParsing="false" onAction="#handleStartSimulation" text="Avvia simulazione" />
                </children>
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
             </HBox>
-            <TextArea fx:id="txtResult" editable="false" wrapText="true" />
+            <TextArea fx:id="resultTextArea" editable="false" focusTraversable="false" prefHeight="250.0" wrapText="true">
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin></TextArea>
          </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
+         <BorderPane.margin>
+            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+         </BorderPane.margin>
       </VBox>
    </center>
 </BorderPane>

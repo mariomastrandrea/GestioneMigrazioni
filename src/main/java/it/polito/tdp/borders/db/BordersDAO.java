@@ -12,129 +12,126 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class BordersDAO {
-	
-	public List<Country> loadAllCountries(Map<Integer,Country> countriesMap) {
-		
-		String sql = 
-				"SELECT ccode,StateAbb,StateNme " +
-				"FROM country " +
-				"ORDER BY StateAbb " ;
-
-		try {
-			Connection conn = DBConnect.getConnection() ;
-
-			PreparedStatement st = conn.prepareStatement(sql) ;
-			
-			ResultSet rs = st.executeQuery() ;
-			
-			List<Country> list = new LinkedList<Country>() ;
-			
-			while( rs.next() ) {
+public class BordersDAO 
+{	
+	public List<Country> loadAllCountries(Map<Integer,Country> countriesMap) 
+	{	
+		final String sqlQuery = "SELECT ccode, StateAbb, StateNme " +
+								"FROM country " +
+								"ORDER BY StateAbb ";
 				
-				if(countriesMap.get(rs.getInt("ccode")) == null){
+		List<Country> resultList = new LinkedList<Country>();
+
+		try 
+		{
+			Connection connection = DBConnect.getConnection();
+			PreparedStatement statement = connection.prepareStatement(sqlQuery);
+			ResultSet queryResult = statement.executeQuery();
+						
+			while(queryResult.next()) 
+			{
+				Country c;
+				int countryCode = queryResult.getInt("ccode");
 				
-					Country c = new Country(
-							rs.getInt("ccode"),
-							rs.getString("StateAbb"), 
-							rs.getString("StateNme")) ;
+				if(!countriesMap.containsKey(countryCode))
+				{
+					c = new Country(queryResult.getInt("ccode"),
+									queryResult.getString("StateAbb"), 
+									queryResult.getString("StateNme"));
+							
 					countriesMap.put(c.getcCode(), c);
-					list.add(c);
-				} else 
-					list.add(countriesMap.get(rs.getInt("ccode")));
-			}
-			
-			conn.close() ;
-			
-			return list ;
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return null ;
-	}
-	
-	public List<Country> getCountriesFromYear(int anno,Map<Integer,Country> countriesMap) {
-		String sql = "select * from country " + 
-				"where CCode in ( " + 
-				"select state1no " + 
-				"from contiguity " + 
-				"where year<=? and conttype=1)" ;
-		
-		try {
-			Connection conn = DBConnect.getConnection() ;
-
-			PreparedStatement st = conn.prepareStatement(sql) ;
-			
-			st.setInt(1, anno);
-			ResultSet rs = st.executeQuery() ;
-			
-			List<Country> list = new LinkedList<Country>() ;
-			
-			while( rs.next() ) {
+				} 
+				else 
+					c = countriesMap.get(countryCode);
 				
-				if(countriesMap.get(rs.getInt("ccode")) == null){
-					Country c = new Country(
-							rs.getInt("ccode"),
-							rs.getString("StateAbb"), 
-							rs.getString("StateNme")) ;
+				resultList.add(c);
+			}
+			
+			DBConnect.close(queryResult, statement, connection);
+		
+			return resultList;
+		} 
+		catch (SQLException sqle) 
+		{
+			sqle.printStackTrace();
+			throw new RuntimeException("Dao error in loadAllCountries()", sqle);
+		}
+	}
+	
+	public List<Country> getCountriesFromYear(int anno, Map<Integer, Country> countriesMap) 
+	{
+		final String sql = "SELECT * FROM country " + 
+							"WHERE CCode in (SELECT state1no " + 
+											"FROM contiguity " + 
+											"WHERE year<=? and conttype=1)";
+		
+		List<Country> resultList = new LinkedList<Country>();
+
+		try 
+		{
+			Connection connection = DBConnect.getConnection();
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, anno);
+			ResultSet queryResult = statement.executeQuery();
+			
+			while(queryResult.next()) 
+			{
+				int countryCode = queryResult.getInt("ccode");
+				Country c;
+				
+				if(!countriesMap.containsKey(countryCode))
+				{
+					c = new Country(queryResult.getInt("ccode"),
+									queryResult.getString("StateAbb"), 
+									queryResult.getString("StateNme")) ;
+					
 					countriesMap.put(c.getcCode(), c);
-					list.add(c);
-				} else 
-					list.add(countriesMap.get(rs.getInt("ccode")));
+				} 
+				else 
+					c = countriesMap.get(countryCode);
+				
+				resultList.add(c);
 			}
 			
-			conn.close() ;
-			
-			return list ;
-			
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DBConnect.close(queryResult, statement, connection);
+			return resultList;
+		} 
+		catch (SQLException sqle) 
+		{
+			sqle.printStackTrace();
+			throw new RuntimeException("Dao error in getCountriesFromYear()", sqle);
 		}
-		
-		return null ;
-
 	}
 	
-	public List<Adiacenza> getCoppieAdiacenti(int anno) {
-		String sql = "select state1no, state2no " + 
-				"from contiguity " + 
-				"where year<=? " + 
-				"and conttype=1 " + 
-				"and state1no < state2no" ;
+	public List<Adiacenza> getCoppieAdiacenti(int anno) 
+	{
+		final String sql = "SELECT state1no, state2no " + 
+							"FROM contiguity " + 
+							"WHERE year <= ? AND conttype = 1 AND state1no < state2no";
 		
-		List<Adiacenza> result = new ArrayList<>() ;
+		List<Adiacenza> result = new ArrayList<>();
 		
-		try {
-			Connection conn = DBConnect.getConnection() ;
-
-			PreparedStatement st = conn.prepareStatement(sql) ;
+		try 
+		{
+			Connection connection = DBConnect.getConnection();
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, anno);
+			ResultSet queryResult = statement.executeQuery();
 			
-			st.setInt(1, anno);
-			
-			ResultSet rs = st.executeQuery() ;
-			
-			while(rs.next()) {
-				result.add(new Adiacenza(rs.getInt("state1no"), rs.getInt("state2no"))) ;
+			while(queryResult.next()) 
+			{
+				Adiacenza a = new Adiacenza(queryResult.getInt("state1no"), queryResult.getInt("state2no"));
+				result.add(a);
 			}
 			
-			conn.close();
-			return result ;
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null ;
+			DBConnect.close(queryResult, statement, connection);
+			return result;
+		} 
+		catch (SQLException sqle) 
+		{
+			sqle.printStackTrace();
+			throw new RuntimeException("Dao error in getCoppieAdiacenti()", sqle);
 		}
-		
-	}
-	
-	
-	
+	}	
 	
 }

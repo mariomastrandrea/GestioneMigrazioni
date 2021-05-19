@@ -18,20 +18,10 @@ public class Country
 	{
 		return cCode;
 	}
-
-	public void setcCode(int cCode) 
-	{
-		this.cCode = cCode;
-	}
-
+	
 	public String getStateAbb() 
 	{
 		return stateAbb;
-	}
-
-	public void setStateAbb(String stateAbb) 
-	{
-		this.stateAbb = stateAbb;
 	}
 
 	public String getStateName() 
@@ -39,17 +29,12 @@ public class Country
 		return stateName;
 	}
 
-	public void setStateName(String stateName) 
-	{
-		this.stateName = stateName;
-	}
-
 	@Override
 	public int hashCode() 
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + cCode;
+		result = prime * result + this.cCode;
 		return result;
 	}
 
@@ -63,7 +48,7 @@ public class Country
 		if (getClass() != obj.getClass())
 			return false;
 		Country other = (Country) obj;
-		if (cCode != other.cCode)
+		if (this.cCode != other.cCode)
 			return false;
 		return true;
 	}

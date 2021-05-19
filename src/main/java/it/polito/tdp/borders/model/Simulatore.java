@@ -19,16 +19,14 @@ public class Simulatore
 	
 	// Parametri della simulazione 
 	private int N_MIGRANTI = 1000; //tot migranti
-	private Country nazionePartenza;
 	
 	// Valori in output
 	private int T;	//istante di tempo corrente
 	private Map<Country, Integer> stanziali;
 	
 	
-	public void initialize(Country country, Graph<Country, DefaultEdge> grafo)
+	public void initialize(Country startCountry, Graph<Country, DefaultEdge> grafo)
 	{
-		this.nazionePartenza = country;
 		this.grafo = grafo;
 		
 		//imposto lo stato iniziale
@@ -37,8 +35,9 @@ public class Simulatore
 				
 		//creo la coda
 		this.queue = new PriorityQueue<>();
+		
 		// inserisco il primo evento
-		Evento primoEvento = new Evento(this.T, this.nazionePartenza, this.N_MIGRANTI);
+		Evento primoEvento = new Evento(this.T, startCountry, this.N_MIGRANTI);
 		this.queue.add(primoEvento);
 	}
 	
@@ -50,25 +49,25 @@ public class Simulatore
 		while((e = this.queue.poll()) != null)
 		{
 			// simulo l'evento 'e'
-			if(e.getT() > this.T)
-				this.T = e.getT();
+			if(this.T < e.getTime() )
+				this.T = e.getTime();
 			
-			int numMigranti = e.getN();
+			int numMigranti = e.getNum();
 			Country statoDiPartenza = e.getCountry();
 			
 			//ottengo gli stati confinanti
-			Collection<Country> vicini = Graphs.neighborListOf(this.grafo, statoDiPartenza);
+			Collection<Country> vicini = Graphs.neighborSetOf(this.grafo, statoDiPartenza);
 			
 			int migrantiPerStatoConfinante = (numMigranti/2) / vicini.size();
 			
-			if(migrantiPerStatoConfinante == 0)
-				continue;
-			
-			//le persone si possono spostare
-			for(Country confinante : vicini)
+			if(migrantiPerStatoConfinante > 0)
 			{
-				Evento newEvento = new Evento(this.T + 1, confinante, migrantiPerStatoConfinante);
-				this.queue.add(newEvento);
+				//le persone si possono spostare
+				for(Country confinante : vicini)
+				{
+					Evento newEvento = new Evento(e.getTime() + 1, confinante, migrantiPerStatoConfinante);
+					this.queue.add(newEvento);
+				}
 			}
 			
 			int nuoviStanziali = numMigranti - migrantiPerStatoConfinante * vicini.size();
@@ -91,7 +90,6 @@ public class Simulatore
 	{
 		return this.T;
 	}
-
 }
 
 

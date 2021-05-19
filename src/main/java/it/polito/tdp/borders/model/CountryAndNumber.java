@@ -1,6 +1,6 @@
 package it.polito.tdp.borders.model;
 
-public class CountryAndNumber //implements Comparable<CountryAndNumber>
+public class CountryAndNumber 
 {
 	private Country country;
 	private int number;
@@ -22,19 +22,12 @@ public class CountryAndNumber //implements Comparable<CountryAndNumber>
 		return this.number;
 	}
 
-	/*
-	@Override
-	public int compareTo(CountryAndNumber other)
-	{
-		//ordine decrescente
-		return Integer.compare(other.number, this.number);
-	}
-	*/
-	
 	@Override
 	public String toString()
 	{
-		return this.country.getStateAbb() + " - " + this.country.getStateName() + " = " + this.number;
+		String result = String.format("%s - %s  =>  #%d", this.country.getStateAbb(), 
+										this.country.getStateName(), this.number);
+		return result;
 	} 
 	
 }

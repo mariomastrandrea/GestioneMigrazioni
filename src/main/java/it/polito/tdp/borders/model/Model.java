@@ -17,13 +17,15 @@ import it.polito.tdp.borders.db.BordersDAO;
 public class Model 
 {	
 	private Graph<Country, DefaultEdge> graph;
-	private Map<Integer,Country> countriesMap;
+	private Map<Integer,Country> countriesIdMap;
 	private Simulatore simulatore;
+	private BordersDAO dao;
 	
 	
 	public Model() 
 	{
-		this.countriesMap = new HashMap<>();
+		this.countriesIdMap = new HashMap<>();
+		this.dao = new BordersDAO();
 		this.simulatore = new Simulatore();
 	}
 	
@@ -31,18 +33,19 @@ public class Model
 	{	
 		this.graph = new SimpleGraph<>(DefaultEdge.class);
 
-		BordersDAO dao = new BordersDAO();
-		
 		//vertici
-		dao.getCountriesFromYear(anno, this.countriesMap);
-		Graphs.addAllVertices(graph, this.countriesMap.values());
+		//this.dao.getCountriesFromYear(anno, this.countriesIdMap);
+		List<Country> countries = this.dao.getCountriesFromYear(anno, this.countriesIdMap);
+		Graphs.addAllVertices(this.graph, countries);
 		
 		// archi
-		List<Adiacenza> archi = dao.getCoppieAdiacenti(anno);
+		List<Adiacenza> archi = this.dao.getCoppieAdiacenti(anno);
 		for(Adiacenza c : archi) 
 		{
-			this.graph.addEdge(this.countriesMap.get(c.getState1no()), 
-					this.countriesMap.get(c.getState2no())) ;
+			Country country1 = this.countriesIdMap.get(c.getState1no());
+			Country country2 = this.countriesIdMap.get(c.getState2no());
+			
+			this.graph.addEdge(country1, country2);
 		}
 	}
 	
@@ -59,7 +62,7 @@ public class Model
 	
 	public void Simula(Country partenza)
 	{
-		if(this.graph == null)
+		if(this.graph == null || partenza == null)
 			return;
 		
 		this.simulatore.initialize(partenza, this.graph);
@@ -93,6 +96,7 @@ public class Model
 		
 		List<Country> result = new ArrayList<>(this.graph.vertexSet()); 
 		result.sort((c1,c2) -> c1.getStateName().compareTo(c2.getStateName()));
+		
 		return result;
 	}
 }
